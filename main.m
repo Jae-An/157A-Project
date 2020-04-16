@@ -1,4 +1,5 @@
 % Runs a bunch of rockets and saves rockets with good performance
+% Units: FPS
 tic
 clear variables; close all;
 fprintf('Optimization Started \n')
@@ -52,7 +53,7 @@ for i = 1:g
     L_nose(i) = results(i).rocket;
     L_body(i) = results(i).rocket;
     D(i) = results(i).rocket.geo.body.D;
-
+    
     z_max(i) = results(i).rocket.data.performance.z_max;
     ORS(i) = results(i).rocket.data.performance.ORS;
 end
@@ -68,3 +69,7 @@ L_body = L_body(sort_index);
 D = D(sort_index);
 z_max = z_max(sort_index);
 ORS = ORS(sort_index);
+
+% Plot
+
+toc

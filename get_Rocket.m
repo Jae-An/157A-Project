@@ -1,5 +1,6 @@
 function [rocket] = get_Rocket(rocket)
 % Fills new rocket parameters, based on initial OpenRocket.
+% Final version will have rand ranges around initial values
 
 %% Geo
 geo = rocket.geo;
@@ -50,10 +51,11 @@ rocket.weight = W;
 
 %% Prop
 prop = rocket.prop;
-%     rocket.prop = struct('T_avg',[],'Isp',[],'t_b',[],'I',[]);
+%     rocket.prop = struct('T_avg',[],'Isp',[],'t_b',[],'I',[],'OF',[]);
         prop.T_avg = 4423;
-        prop.Isp = 250;
-        prop.I = 9200;
+        prop.Isp = 250; % will fix
+        prop.I = 9200; % will fix
         prop.t_b = prop.I / prop.T_avg;
+        prop.OF = 6; % not sure if this is varied
 rocket.prop = prop;
 end

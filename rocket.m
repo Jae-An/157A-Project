@@ -38,7 +38,7 @@ rocket.aero = struct('total',[],'nose',[],'body',[],'tail',[],'fins',[]);
 %     rocket.data.stability = struct('h_n',[],'is_stable',[],'yaw_is_stable',[],'stall',[],'alphas',[]);    
 
 %% Propulsion
-rocket.prop = struct('T_avg',[],'Isp',[],'t_b',[],'I',[]);
+rocket.prop = struct('T_avg',[],'Isp',[],'t_b',[],'I',[],'OF',[]);
 
 %% Performance, Aerodynamics, Stability
 rocket.data = struct('requirements',[],'performance',[]);
