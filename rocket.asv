@@ -16,6 +16,7 @@ rocket.geo = struct('nose',[],'body',[],'tail',[],'fins',[],'press_tank',[],'ox_
     
 %% Weights and Inertias    
 rocket.weight = struct('total',[],'nose',[],'body',[],'tail',[],'fins',[],'press_tank',[],'ox_tank',[],'CC',[],'misc',[]);
+    rocket.weight.nose = struct('W',[],'I',[],[],'CG',[]);
     rocket.weight.nose = struct('W',[],'I',[],'I_pt',[],'CG',[]);
     rocket.weight.body = struct('W',[],'I',[],'I_pt',[],'CG',[]);
     rocket.weight.tail = struct('W',[],'I',[],'I_pt',[],'CG',[]);
@@ -23,7 +24,7 @@ rocket.weight = struct('total',[],'nose',[],'body',[],'tail',[],'fins',[],'press
     rocket.weight.press_t = struct('W',[],'I',[],'I_pt',[],'CG',[]);
     rocket.weight.ox_t = struct('W',[],'I',[],'I_pt',[],'CG',[]);
     rocket.weight.CC = struct('W',[],'I',[],'I_pt',[],'CG',[]);
-    rocket.weight.prop = 
+    rocket.weight.propellant = struct('W',[],'I',[],'I_pt',[],'CG',[]);
     rocket.weight.misc = struct('W',[],'I',[],'I_pt',[],'CG',[]);    
 
 %% Aerodynamics
@@ -37,7 +38,7 @@ rocket.aero = struct('total',[],'nose',[],'body',[],'tail',[],'fins',[]);
 %     rocket.data.stability = struct('h_n',[],'is_stable',[],'yaw_is_stable',[],'stall',[],'alphas',[]);    
 
 %% Propulsion
-rocket.prop = struct('T_avg',[],'Isp',[],'t_b',[]);
+rocket.prop = struct('T_avg',[],'Isp',[],'t_b',[],'I',[]);
 
 %% Performance, Aerodynamics, Stability
 rocket.data = struct('requirements',[],'performance',[]);
