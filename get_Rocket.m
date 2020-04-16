@@ -28,11 +28,24 @@ geo = rocket.geo;
     % rocket.geo.press_t = struct('D',[],'L',[],'t',[],'x',[]);
     % rocket.geo.ox_t    = struct('D',[],'L',[],'t',[],'x',[]);
     % rocket.geo.CC      = struct('D',[],'L',[],'t',[],'x',[]);
-
+    % rocket.geo.fuel    = struct('D_o',[],'D_i',[],'L',[]);
+        geo.fuel.D_i = 2/12;
 rocket.geo = geo;
+
+%% Prop
+prop = rocket.prop;
+%     rocket.prop = struct('T_avg',[],'Isp',[],'t_b',[],'I',[],'OF',[]);
+        prop.T_avg = 4423;
+        prop.Isp = 250; % will fix
+        prop.I = 9200; % will fix
+        prop.t_b = prop.I / prop.T_avg;
+        prop.OF = 6; % not sure if this is varied
+        prop.P_c = 500*144; % [psf]
+rocket.prop = prop;
 
 %% Weight
 W = rocket.weight;
+        rocket = get_PropSys(rocket);
 %     rocket.weight.nose = struct('W',[],'I',[],'I_pt',[],'CG',[]);
         W.nose.W = 2.57 * (geo.nose.L*geo.nose.D*geo.nose.t)/(2.5*0.65*0.0066); % Assumed fiberglass, conical nosecone, no tip
         W.nose.CG = 2*geo.nose.L/3;
@@ -49,13 +62,4 @@ W = rocket.weight;
 %     rocket.weight.misc = struct('W',[],'I',[],'I_pt',[],'CG',[]); 
 rocket.weight = W;
 
-%% Prop
-prop = rocket.prop;
-%     rocket.prop = struct('T_avg',[],'Isp',[],'t_b',[],'I',[],'OF',[]);
-        prop.T_avg = 4423;
-        prop.Isp = 250; % will fix
-        prop.I = 9200; % will fix
-        prop.t_b = prop.I / prop.T_avg;
-        prop.OF = 6; % not sure if this is varied
-rocket.prop = prop;
 end

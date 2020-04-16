@@ -47,7 +47,7 @@ ORS = zeros(g,1);
 for i = 1:g
     W_wet(i) = results(i).rocket.weight.total.W_wet;
     W_dry(i) = results(i).rocket.weight.total.W_dry;    
-    W_prop(i) = results(i).rocket.weight.propellant.W_i;
+    W_prop(i) = results(i).rocket.weight.total.W_propellant;
     
     L(i) = results(i).rocket.geo.total.L;
     L_nose(i) = results(i).rocket;
