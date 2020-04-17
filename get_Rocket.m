@@ -40,7 +40,7 @@ function [rocket] = get_Rocket(rocket)
         prop = rocket.prop;
 
         prop.T_avg = 4423;
-        prop.Isp = 250; % will fix
+        prop.Isp = 200; % will fix
         prop.I = 9200; % will fix
         prop.t_b = prop.I / prop.T_avg;
         prop.OF = 6; % not sure if this is varied

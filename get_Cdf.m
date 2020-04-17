@@ -18,7 +18,7 @@ function [Cd_f] = get_Cdf(rocket, v, M, nu, L, K)
     Cf_final = zeros(2,1); % only (nose+)body, fins
     L_char = [L, C_r]; % characteristic lengths
     for i = 1:2
-        Rn_str = (v*L_char(i)/(12*nu))...
+        Rn_str = (v*L_char(i)/nu)...
                * (1 + 0.0283*M - 0.043*M^2 + 0.2107*M^3 - 0.03829*M^4 + 0.002709*M^5);
         Cf_str = 0.037036 * Rn_str^-0.155079;
         Cf = Cf_str * (1 + 0.00798*M - 0.1813*M^2 + 0.0632*M^3 - 0.00933*M^4 + 0.000549*M^5);
@@ -31,7 +31,7 @@ function [Cd_f] = get_Cdf(rocket, v, M, nu, L, K)
     Cd_f_body = Cf_final(1)*(1 + 60/(L/d)^3 + 0.0025*(L/d))*(4*S_b/(pi*d^2));
     
     % Fins
-    Rn = v*C_r / (12*nu);
+    Rn = v*C_r / nu;
     lambda = C_t / C_r;
     Cf_lambda = Cf_final(2) * (log10(Rn)^2.6 / (lambda^2 - 1))...
               * ((lambda^2 / log10(Rn*lambda)^2.6) - (1 / log10(Rn)^2.6)...
