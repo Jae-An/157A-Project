@@ -1,12 +1,15 @@
 function [rocket] = get_PropSys(rocket)
 
 %% Propellant mass
+% Chosen values
 T = rocket.prop.T_avg;         %Thrust, [lbf], CHOSEN VALUE
 Isp = rocket.prop.Isp;         %specific impulse, [s], CHOSEN VALUE
 Itot = rocket.prop.I;          %total impulse, [lbf*s], GIVEN VALUE
 OF = rocket.prop.OF;           %ox-fuel ratio, CHOSEN VALUE
 P_c = rocket.prop.P_c;         %chamber pressure, [psf], CHOSEN VALUE
 D_tank = rocket.geo.ox_t.D;    %tank diameter [ft]   CHOSEN VALUE
+
+rocket.geo.fuel.D_i = 2/12;
 D_i = rocket.geo.fuel.D_i;     %inner diam of fuel grain, [ft] CHOSEN VALUE
 
 %Al 6061T6 properties
@@ -28,12 +31,12 @@ rho_f = percent_htpb*rho_htpb + percent_paraffin*rho_paraffin; %[lb/ft3]
 rho_ox = 48.21;            %density of liquid n2o [lb/ft3]
 
 W_prop = Itot / Isp;           %propellant weight [lb]
-rocket.weight.propellant.W_i = W_prop;
+rocket.weight.total.W_propellant = W_prop;
 
 W_f = W_prop / (OF+1);         %fuel weight [lb]
 W_ox = W_prop*OF / (OF+1);     %ox weight [lb]
-rocket.weight.fuel.W_i = W_f;
-rocket.weight.ox.W_i = W_ox;
+rocket.weight.fuel.W = W_f;
+rocket.weight.ox.W = W_ox;
 
 %% Tank sizing
 
@@ -45,9 +48,9 @@ V_ox = W_ox / rho_ox;       %ox volume [ft3]
 L_tank = V_ox / (pi * D_tank^2 / 4);    %tank length [ft]
 SA_tank = 2*(pi * D_tank^2 / 4) + pi*D_tank*L_tank;
 t_tank = D_tank / 2 * P_tank / sig_working;     %tank thickness, [ft]
-rocket.geo.ox_t.L = L_tank;
+rocket.geo.ox_t.L = L_tank + 4*t_tank; % approximate tank caps as 2t each
 rocket.geo.ox_t.t = t_tank;
-
+rocket.geo.ox.L = L_tank;
 W_tank = SA_tank * t_tank * rho_Al; %tank mass, [lb]
 rocket.weight.ox_t.W = W_tank;
 
@@ -72,7 +75,11 @@ rocket.weight.CC.W = W_cc;
 
 %nozzle
 W_nozzle = 4*2.205;         %[lb]
+d_nozzle_exit = 2.86/12;
+A_e = pi * (d_nozzle_exit/2)^2;
+rocket.prop.A_e = A_e;
 %plumbing
-W_plumbing = 10*2.205;            %[kg]
+%W_plumbing = 10*2.205;            %[lb]
 
-rocket.weight.misc.W = rocket.weight.misc.W + W_nozzle + W_plumbing;
+rocket.weight.CC.W = rocket.weight.CC.W + W_nozzle;
+%rocket.weight.misc.W = rocket.weight.misc.W + W_nozzle + W_plumbing;

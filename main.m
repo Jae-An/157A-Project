@@ -17,6 +17,7 @@ while g < G
     % New rocket instance
     newRocket = rocket();
     newRocket = get_Rocket(newRocket);
+    newRocket = get_Stability(newRocket);
     newRocket = get_Performance(newRocket);
     
     % Check for pass
