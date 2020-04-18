@@ -15,7 +15,7 @@ aC = pi() * (rocket.geo.body.D^2 - (rocket.geo.body.D-tWall)^2);
 stress = rocket.prop.T_avg/aC;
 
 minFOS = Yield/stress;
-while (minFOS < 2)
+while (minFOS < 2 || minFOS > 2.3)
     tWall = tWall + 0.005;
     aC = pi() * (rocket.geo.body.D^2 - (rocket.geo.body.D-tWall)^2);
     stress = rocket.prop.T_avg/aC;
