@@ -11,7 +11,7 @@ weight = rocket.weight;
 %% Solver Parameters
 CNa_n = 2;
 CNa_b = 4*body.L*deg2rad(12.2)/(pi*body.D); % 12.2 deg is max ORAOA
-X_n = 0.666; % assume cone
+X_n = 0.666*rocket.geo.nose.L; % assume cone
 X_b = body.x + body.L/2;
 sumCNa_nb = CNa_n + CNa_b;
 sumCNaX_nb = CNa_n*X_n + CNa_b*X_b;
