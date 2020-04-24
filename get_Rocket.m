@@ -6,14 +6,16 @@ function [rocket] = get_Rocket(rocket)
     geo = rocket.geo;
     
     % rocket.geo.nose = struct('D',[],'L',[],'t',[],'x',0,'A_p',[]);
-        geo.nose.D = 7.8/12;
-        geo.nose.L = 30/12;
-        geo.nose.t = 0.079;
+        geo.nose.D = (6 + rand*(10 - 6)) / 12; % [ft]
+        FR = 3 + rand*(7 - 3);
+        geo.nose.L = FR * geo.nose.D;
+        geo.nose.t = 0.3/12; % INTEGRATE STRUCTURAL/MATERIAL SCRIPTS HERE
         geo.nose.A_p = 0.5 * geo.nose.D * geo.nose.L;
     % rocket.geo.body = struct('D',[],'L',[],'t',[],'x',[],'A_p',[],'K',1.5);
-        geo.body.D = geo.nose.D;
-        geo.body.L = 100/12;
-        geo.body.t = 0.079;
+        geo.body.D = geo.nose.D; % [ft]
+        AR = ((10 + rand*(25 - 10)) - FR);
+        geo.body.L = AR * geo.body.D;
+        geo.body.t = 0.1/12; % INTEGRATE STRUCTURAL/MATERIAL SCRIPTS HERE also RP body tubes were 0.07" thick
         geo.body.x = geo.nose.L;
         geo.body.A_p = geo.body.D * geo.body.L;
     % rocket.geo.tail = struct('D',[],'L',[],'t',[],'x',[],'A_p',[],'R1',[],'R2',[]);
@@ -25,7 +27,7 @@ function [rocket] = get_Rocket(rocket)
 %         geo.tail.R1 = ;
 %         geo.tail.R2 = ;
     % rocket.geo.fins = struct('RC',[],'TC',[],'SS',[],'SL',[],'MC',[],'N',[],'t',[],'x',[]);
-        geo.fins.N = 4; % use round and rand to set N to 3 or 4 later
+        geo.fins.N = round(rand + 3); % sets N to 3 or 4
         geo.fins.x = geo.nose.L + geo.body.L; % initial approximation
     % Aeroshell total
     geo.total.L = geo.nose.L + geo.body.L; 
@@ -39,12 +41,12 @@ function [rocket] = get_Rocket(rocket)
     % Prop sizing
         prop = rocket.prop;
 
-        prop.T_avg = 1000;
-        prop.Isp = 200; % will fix
+        prop.T_avg = 1000 + rand*(2000 - 1000); % [lbf] 
+        prop.Isp = 200;
         prop.I = 9200; % will fix
         prop.t_b = prop.I / prop.T_avg;
-        prop.OF = 6; % not sure if this is varied
-        prop.P_c = 500*144; % [psf]
+        prop.OF = 6; % Assume not varied
+        prop.P_c = 500*144; % [psf] Assumed for now
 
         rocket.prop = prop;
         rocket.geo.ox_t.D = geo.body.D - 2*geo.body.t; % For now approximate as wide tanks
@@ -60,7 +62,7 @@ function [rocket] = get_Rocket(rocket)
     geo.ox.x = geo.ox_t.x + 2*geo.ox_t.t;
     
     geo.misc.x = geo.misc.L;
-    dx = 2/12; % Spacing between consecutive components
+    dx = 2/12; % [ft] Spacing between consecutive components
     geo.misc.x(1) = geo.payload.x + geo.payload.L + dx;
     for i = 2:4
         geo.misc.x(i) = geo.misc.x(i-1) + geo.misc.L(i-1) + dx;
@@ -77,11 +79,11 @@ function [rocket] = get_Rocket(rocket)
 %% Weight
 W = rocket.weight;       
 	% Nose (Cone)
-    W.nose.W = 2.57 * (geo.nose.L*geo.nose.D*geo.nose.t)/(2.5*0.65*0.0066); % Assumed fiberglass, conical nosecone, no tip
+    W.nose.W = 115.492 * (0.5*pi*geo.nose.L*geo.nose.D*geo.nose.t); % Assumed fiberglass, conical nosecone, no tip
     W.nose.CG = 2*geo.nose.L/3;
 	
     % Body (Cylinder shell)
-    W.body.W = 111.24 * pi*geo.body.L*(geo.body.D*geo.body.t - geo.body.t^2);
+    W.body.W = 111.123 * 0.25*pi*geo.body.L*(2*geo.body.D*geo.body.t - geo.body.t^2); % Assumed CF
     W.body.CG = geo.body.x + geo.body.L/2;
     
     % Tail (empty for now)

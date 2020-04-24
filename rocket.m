@@ -12,7 +12,6 @@ rocket.geo = struct('nose',[],'body',[],'tail',[],'fins',[],'press_tank',[],'ox_
     rocket.geo.fins = struct('RC',[],'TC',[],'SS',[],'SL',[],'MC',[],'N',[],'t',[],'x',[]);
     
     rocket.geo.payload  = struct('D',0.25,'L',0.5,'x',[]);
-    rocket.geo.press_t  = struct('D',[],'L',[],'t',[],'x',[]);
     rocket.geo.ox_t     = struct('D',[],'L',[],'t',[],'x',[]);
     rocket.geo.ox       = struct('D',[],'L',[],'x',[]);
     rocket.geo.CC       = struct('D',[],'L',[],'t',[],'x',[]);

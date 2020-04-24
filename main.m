@@ -8,7 +8,7 @@ fprintf('Optimization Started \n')
 g = 0; % passed rockets
 b = 0; % failed rockets
 n = 0; % total# rockets
-G = 10; % desired# passed rockets
+G = 100; % desired# passed rockets
 results = struct();
 
 %% Begin study
@@ -72,5 +72,4 @@ z_max = z_max(sort_index);
 ORS = ORS(sort_index);
 
 % Plot
-
 toc
