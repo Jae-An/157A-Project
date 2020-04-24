@@ -12,7 +12,7 @@ G = 10; % desired# passed rockets
 results = struct();
 
 %% Begin study
-fprintf('Finding good planes... \n')
+fprintf('Finding good rockets... \n')
 while g < G
     % New rocket instance
     newRocket = rocket();
@@ -51,8 +51,8 @@ for i = 1:g
     W_prop(i) = results(i).rocket.weight.total.W_propellant;
     
     L(i) = results(i).rocket.geo.total.L;
-    L_nose(i) = results(i).rocket;
-    L_body(i) = results(i).rocket;
+    L_nose(i) = results(i).rocket.geo.nose.L;
+    L_body(i) = results(i).rocket.geo.body.L;
     D(i) = results(i).rocket.geo.body.D;
     
     z_max(i) = results(i).rocket.data.performance.z_max;

@@ -39,7 +39,7 @@ function [rocket] = get_Rocket(rocket)
     % Prop sizing
         prop = rocket.prop;
 
-        prop.T_avg = 4423;
+        prop.T_avg = 1000;
         prop.Isp = 200; % will fix
         prop.I = 9200; % will fix
         prop.t_b = prop.I / prop.T_avg;

@@ -60,7 +60,7 @@ X_f = fins.x ...
     + fins.SL * (fins.RC + 2*fins.TC)/(3*(fins.RC+fins.TC)) ...
     + (fins.RC + fins.TC - fins.RC*fins.TC/(fins.RC+fins.TC))/6; 
 
-X_CP = (sumCNaX_nb + CNa_f*X_f) / (sumCNaX_nb + CNa_f);
+X_CP = (sumCNaX_nb + CNa_f*X_f) / (sumCNa_nb + CNa_f);
 
 
 

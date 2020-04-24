@@ -22,7 +22,7 @@ function [Cd_f] = get_Cdf(rocket, v, M, nu, L, K)
                * (1 + 0.0283*M - 0.043*M^2 + 0.2107*M^3 - 0.03829*M^4 + 0.002709*M^5);
         Cf_str = 0.037036 * Rn_str^-0.155079;
         Cf = Cf_str * (1 + 0.00798*M - 0.1813*M^2 + 0.0632*M^3 - 0.00933*M^4 + 0.000549*M^5);
-        Cf_str_term = (1.89 + 1.62*log10(L/K))^-2.5;
+        Cf_str_term = (1.89 + 1.62*log10(L_char(i)*12/K))^-2.5; % L*12 to convert to [in]
         Cf_term = Cf_str_term / (1 + 0.2044*M^2);
         Cf_final(i) = max([Cf, Cf_term]);
     end

@@ -1,4 +1,4 @@
-function [CD] = get_CD(rocket, h, v)
+function [CD, M] = get_CD(rocket, h, v)
 % Note: v should be abs(v)
     %% General Parameters
         % Mach number
