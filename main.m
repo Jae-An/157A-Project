@@ -8,7 +8,7 @@ fprintf('Optimization Started \n')
 g = 0; % passed rockets
 b = 0; % failed rockets
 n = 0; % total# rockets
-G = 100; % desired# passed rockets
+G = 10000; % desired# passed rockets
 results = struct();
 
 %% Begin study
@@ -43,6 +43,7 @@ D = zeros(g,1);
 
 z_max = zeros(g,1);
 ORS = zeros(g,1);
+MOS = zeros(g,1);
 
 % Extract data
 for i = 1:g
@@ -57,6 +58,7 @@ for i = 1:g
     
     z_max(i) = results(i).rocket.data.performance.z_max;
     ORS(i) = results(i).rocket.data.performance.ORS;
+    MOS(i) = results(i).rocket.data.performance.MOS;
 end
 
 % Sort by weight
@@ -70,6 +72,7 @@ L_body = L_body(sort_index);
 D = D(sort_index);
 z_max = z_max(sort_index);
 ORS = ORS(sort_index);
+MOS = MOS(sort_index);
 
 % Plot
 toc

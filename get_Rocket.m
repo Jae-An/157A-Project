@@ -6,14 +6,14 @@ function [rocket] = get_Rocket(rocket)
     geo = rocket.geo;
     
     % rocket.geo.nose = struct('D',[],'L',[],'t',[],'x',0,'A_p',[]);
-        geo.nose.D = (6 + rand*(10 - 6)) / 12; % [ft]
+        geo.nose.D = (4 + rand*(8 - 4)) / 12; % [ft]
         FR = 3 + rand*(7 - 3);
         geo.nose.L = FR * geo.nose.D;
         geo.nose.t = 0.3/12; % INTEGRATE STRUCTURAL/MATERIAL SCRIPTS HERE
         geo.nose.A_p = 0.5 * geo.nose.D * geo.nose.L;
     % rocket.geo.body = struct('D',[],'L',[],'t',[],'x',[],'A_p',[],'K',1.5);
         geo.body.D = geo.nose.D; % [ft]
-        AR = ((10 + rand*(25 - 10)) - FR);
+        AR = ((10 + rand*(20 - 10)) - FR);
         geo.body.L = AR * geo.body.D;
         geo.body.t = 0.1/12; % INTEGRATE STRUCTURAL/MATERIAL SCRIPTS HERE also RP body tubes were 0.07" thick
         geo.body.x = geo.nose.L;
@@ -41,7 +41,7 @@ function [rocket] = get_Rocket(rocket)
     % Prop sizing
         prop = rocket.prop;
 
-        prop.T_avg = 1000 + rand*(2000 - 1000); % [lbf] 
+        prop.T_avg = 1000; % [lbf] 
         prop.Isp = 200;
         prop.I = 9200; % will fix
         prop.t_b = prop.I / prop.T_avg;
@@ -55,7 +55,7 @@ function [rocket] = get_Rocket(rocket)
     % Miscellaneous + Finishing prop geo
     % (main, rec. bulkhead, drogue, avionics, thr bulkhead, plumbing)    
     geo = rocket.geo;
-    geo.misc.L = [0.75, 0.125, 0.5, 5, 0.05, 0.25]; % ALL ESTIMATES
+    geo.misc.L = [0.75, 0.125, 0.5, 0.5, 0.05, 0.25]; % ALL ESTIMATES
     geo.CC.x = geo.total.L - geo.CC.L;
     geo.fuel.x = geo.CC.x + 0.05*geo.CC.L; % fuel in middle of CC
     geo.ox_t.x = geo.CC.x - geo.misc.L(5) - geo.ox_t.L;
