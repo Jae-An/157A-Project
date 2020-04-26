@@ -49,9 +49,10 @@ geo = rocket.geo;
         prop.T_avg = 1000; % [lbf] 
         prop.Isp = 200;
         prop.I = 9200; % will fix
-        prop.t_b = prop.I / prop.T_avg;
+	prop.t_b = 7.6;		%from CoDR OpenRocket; burn time assoc. w/ I = 9200 took rocket beyond 30k
+        %prop.t_b = prop.I / prop.T_avg;
         prop.OF = 6; % Assume not varied
-        prop.P_c = 500*144; % [psf] Assumed for now
+        prop.P_c = 575*144;	%500*144; % [psf] Assumed for now
 
         rocket.prop = prop;
         rocket.geo.ox_t.D = geo.body.D - 2*rocket.geo.body.t; % For now approximate as wide tanks
