@@ -145,12 +145,18 @@ function [rocket] = get_Performance(rocket)
     %% Save data
     v_ORS = rssq(v);
     v_ORS = v_ORS(dist > length_rail);
-    if length(v_ORS) > 0
+    if ~isempty(v_ORS)
         v_ORS = v_ORS(1);
     else
         v_ORS = 0;
     end
     
+    
+    
     rocket.data.performance.z_max = max(x(2,:));
-    rocket.data.performance.ORS = v_ORS;
+    rocket.data.performance.Ma_max = max(Mach);
+    rocket.data.performance.v_ORS = v_ORS;
+    rocket.data.performance.v_max = max(rssq(v));
+    rocket.data.performance.v_apogee = 
+    rocket.data.performance.a_max = max(rssq(a));
     

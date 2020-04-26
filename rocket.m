@@ -7,14 +7,14 @@ rocket = struct('geo',[],'weight',[],'aero',[],'prop',[],'data',[]);
 rocket.geo = struct('nose',[],'body',[],'tail',[],'fins',[],'press_tank',[],'ox_tank',[],'plumbing',[],'CC',[],'payload',[],'misc',[]);
     rocket.geo.total = struct('L',[]);
     rocket.geo.nose = struct('D',[],'L',[],'t',[],'x',0,'A_p',[]);
-    rocket.geo.body = struct('D',[],'L',[],'t',[],'x',[],'A_p',[],'K',1.5);
+    rocket.geo.body = struct('D',[],'L',[],'t',[],'x',[],'A_p',[],'K',1.5,'material',[]);
     rocket.geo.tail = struct('D',[],'L',[],'t',[],'x',[],'A_p',[],'R1',[],'R2',[]);
     rocket.geo.fins = struct('RC',[],'TC',[],'SS',[],'SL',[],'MC',[],'N',[],'t',[],'x',[]);
     
     rocket.geo.payload  = struct('D',0.25,'L',0.5,'x',[]);
-    rocket.geo.ox_t     = struct('D',[],'L',[],'t',[],'x',[]);
+    rocket.geo.ox_t     = struct('D',[],'L',[],'t',[],'x',[],'material',[]);
     rocket.geo.ox       = struct('D',[],'L',[],'x',[]);
-    rocket.geo.CC       = struct('D',[],'L',[],'t',[],'x',[]);
+    rocket.geo.CC       = struct('D',[],'L',[],'t',[],'x',[],'material',[]);
     rocket.geo.fuel     = struct('D_o',[],'D_i',[],'L',[]);
     rocket.geo.misc     = struct('L',[],'x',[]);
         % Contains main, recovery bulkhead, drogue, avionics, thrust
@@ -45,9 +45,9 @@ rocket.aero = struct('total',[],'nose',[],'body',[],'tail',[],'fins',[]);
     rocket.aero.fins = struct('CD',[]); %'aoa',[],'CNa',[],'TC',[],'SS',[],'SL',[],'MC',[],'N',[],'W',[],'m',[],'t',[],'x',[],'CG',[]);  
 
 %% Propulsion
-rocket.prop = struct('T_avg',[],'Isp',[],'t_b',[],'OF',[],'A_e',[]);
+rocket.prop = struct('T_avg',1000,'I',[],'Isp',[],'t_b',[],'OF',[],'A_e',[],'P_c',[]);
 
 %% Performance, Aerodynamics, Stability
 rocket.data = struct('requirements',[],'performance',[]);
-    rocket.data.requirements = struct('ORS',100,'z_max',30000,'MOS',1.25); % Add stall angle?
-    rocket.data.performance = struct('ORS',[],'z_max',[],'MOS',[],'Ma_max',[],'a_max',[]);
+    rocket.data.requirements = struct('v_ORS',100,'z_max',30000,'MOS',1.25); % Add stall angle?
+    rocket.data.performance = struct('v_ORS',[],'z_max',[],'MOS',[],'Ma_max',[],'v_max',[],'a_max',[]);

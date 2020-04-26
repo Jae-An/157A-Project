@@ -12,11 +12,16 @@ D_tank = rocket.geo.ox_t.D;    %tank diameter [ft]   CHOSEN VALUE
 rocket.geo.fuel.D_i = 2/12;
 D_i = rocket.geo.fuel.D_i;     %inner diam of fuel grain, [ft] CHOSEN VALUE
 
-%Al 6061T6 properties
-sig_yield = 5.76e6;          %tensile strength, [psf]
-FOS = 1.5;                  %factor of safety, CHOSEN VALUE
-sig_working = sig_yield / FOS;  %working stress, [psf]
-rho_Al = 169;              %density, [lb/ft3]
+% Material properties
+FOS = 1.5;                     %factor of safety, CHOSEN VALUE
+% Ox Tank
+sig_yield_tank = rocket.geo.ox_t.material.yield;      %tensile strength, [psf]       
+sig_working_tank = sig_yield_tank / FOS;              %working stress, [psf]
+rho_tank = rocket.geo.ox_t.material.density;          %density, [lb/ft3]
+% CC
+sig_yield_cc = rocket.geo.CC.material.yield;          %tensile strength, [psf]       
+sig_working_cc = sig_yield_cc / FOS;                  %working stress, [psf]
+rho_cc = rocket.geo.CC.material.density;              %density, [lb/ft3]
 
 rho_htpb = 57.4;             %density cured htpb, [lb/ft3]
 rho_paraffin = 56.2;         %density paraffin, [lb/ft3]
@@ -47,18 +52,18 @@ P_tank = P_c + P_inj + P_feed;  % [psf] ox tank pressure
 V_ox = W_ox / rho_ox;       %ox volume [ft3]
 L_tank = V_ox / (pi * D_tank^2 / 4);    %tank length [ft]
 SA_tank = 2*(pi * D_tank^2 / 4) + pi*D_tank*L_tank;
-t_tank = D_tank / 2 * P_tank / sig_working;     %tank thickness, [ft]
+t_tank = D_tank / 2 * P_tank / sig_working_tank;     %tank thickness, [ft]
 rocket.geo.ox_t.L = L_tank + 4*t_tank; % approximate tank caps as 2t each
 rocket.geo.ox_t.t = t_tank;
 rocket.geo.ox.L = L_tank;
-W_tank = SA_tank * t_tank * rho_Al; %tank mass, [lb]
+W_tank = SA_tank * t_tank * rho_tank; %tank mass, [lb]
 rocket.weight.ox_t.W = W_tank;
 
 %% Fuel grain + CC sizing
 V_f = W_f / rho_f;          % [ft3]
 
 D_cc = D_tank;
-t_cc = D_cc/2 * P_c / sig_working;   %assume cc is same material as tank
+t_cc = D_cc/2 * P_c / sig_working_cc;   %assume cc is same material as tank
 D_o = D_cc - 2*t_cc;               %outer diameter of fuel
 rocket.geo.CC.D = D_cc;
 rocket.geo.CC.t = t_cc;
@@ -70,7 +75,7 @@ rocket.geo.fuel.L = L_f;
 rocket.geo.CC.L = L_cc;
 
 SA_cc = pi*D_cc*L_cc;
-W_cc = SA_cc * t_cc * rho_Al;       %cc mass [lb]
+W_cc = SA_cc * t_cc * rho_cc;       %cc mass [lb]
 rocket.weight.CC.W = W_cc;
 
 %nozzle

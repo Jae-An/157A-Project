@@ -8,13 +8,13 @@ fprintf('Optimization Started \n')
 g = 0; % passed rockets
 b = 0; % failed rockets
 n = 0; % total# rockets
-G = 10000; % desired# passed rockets
+G = 1000; % desired# passed rockets
 results = struct();
 
 %% Begin study
 fprintf('Finding good rockets... \n')
 while g < G
-    % New rocket instance
+    % New rocket instance3
     newRocket = rocket();
     newRocket = get_Rocket(newRocket);
     newRocket = get_Stability(newRocket);
@@ -41,6 +41,10 @@ L_nose = zeros(g,1);
 L_body = zeros(g,1);
 D = zeros(g,1);
 
+mat_body = zeros(g,1);
+mat_ox_t = zeros(g,1);
+mat_CC = zeros(g,1);
+
 z_max = zeros(g,1);
 ORS = zeros(g,1);
 MOS = zeros(g,1);
@@ -56,6 +60,10 @@ for i = 1:g
     L_body(i) = results(i).rocket.geo.body.L;
     D(i) = results(i).rocket.geo.body.D;
     
+    mat_body(i) = results(i).rocket.geo.body.material.no;
+    mat_ox_t(i) = results(i).rocket.geo.ox_t.material.no;
+    mat_CC(i) = results(i).rocket.geo.CC.material.no;
+    
     z_max(i) = results(i).rocket.data.performance.z_max;
     ORS(i) = results(i).rocket.data.performance.ORS;
     MOS(i) = results(i).rocket.data.performance.MOS;
@@ -70,6 +78,9 @@ L = L(sort_index);
 L_nose = L_nose(sort_index);
 L_body = L_body(sort_index);
 D = D(sort_index);
+mat_body = mat_body(sort_index);
+mat_ox_t = mat_ox_t(sort_index);
+mat_CC = mat_CC(sort_index);
 z_max = z_max(sort_index);
 ORS = ORS(sort_index);
 MOS = MOS(sort_index);

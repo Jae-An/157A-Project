@@ -2,20 +2,24 @@ function [rocket] = get_Rocket(rocket)
 % Fills new rocket parameters, based on initial OpenRocket.
 % Final version will have rand ranges around initial values
 
+
 %% Geo
-    geo = rocket.geo;
-    
+geo = rocket.geo;
+    % Materials
+    geo.body.material = get_Material(13);
+    geo.ox_t.material = get_Material(11);
+    geo.CC.material = get_Material(11);
+
     % rocket.geo.nose = struct('D',[],'L',[],'t',[],'x',0,'A_p',[]);
         geo.nose.D = (4 + rand*(8 - 4)) / 12; % [ft]
         FR = 3 + rand*(7 - 3);
         geo.nose.L = FR * geo.nose.D;
-        geo.nose.t = 0.3/12; % INTEGRATE STRUCTURAL/MATERIAL SCRIPTS HERE
+        geo.nose.t = 0.3/12; % keep constant
         geo.nose.A_p = 0.5 * geo.nose.D * geo.nose.L;
     % rocket.geo.body = struct('D',[],'L',[],'t',[],'x',[],'A_p',[],'K',1.5);
         geo.body.D = geo.nose.D; % [ft]
         AR = ((10 + rand*(20 - 10)) - FR);
         geo.body.L = AR * geo.body.D;
-        geo.body.t = 0.1/12; % INTEGRATE STRUCTURAL/MATERIAL SCRIPTS HERE also RP body tubes were 0.07" thick
         geo.body.x = geo.nose.L;
         geo.body.A_p = geo.body.D * geo.body.L;
     % rocket.geo.tail = struct('D',[],'L',[],'t',[],'x',[],'A_p',[],'R1',[],'R2',[]);
@@ -36,6 +40,7 @@ function [rocket] = get_Rocket(rocket)
     geo.payload.x = geo.nose.L * (geo.payload.D/geo.nose.D);
     
     rocket.geo = geo;
+    rocket = get_Buckling(rocket); % geo.body.t
     
     %% Prop
     % Prop sizing
@@ -49,7 +54,7 @@ function [rocket] = get_Rocket(rocket)
         prop.P_c = 500*144; % [psf] Assumed for now
 
         rocket.prop = prop;
-        rocket.geo.ox_t.D = geo.body.D - 2*geo.body.t; % For now approximate as wide tanks
+        rocket.geo.ox_t.D = geo.body.D - 2*rocket.geo.body.t; % For now approximate as wide tanks
         rocket = get_PropSys(rocket);
     
     % Miscellaneous + Finishing prop geo
@@ -83,7 +88,7 @@ W = rocket.weight;
     W.nose.CG = 2*geo.nose.L/3;
 	
     % Body (Cylinder shell)
-    W.body.W = 111.123 * 0.25*pi*geo.body.L*(2*geo.body.D*geo.body.t - geo.body.t^2); % Assumed CF
+    W.body.W = geo.body.material.density * 0.25*pi*geo.body.L*(2*geo.body.D*geo.body.t - geo.body.t^2);
     W.body.CG = geo.body.x + geo.body.L/2;
     
     % Tail (empty for now)
