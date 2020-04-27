@@ -1,6 +1,4 @@
 function [rocket] = get_Buckling(rocket)
-    %currently assuming that the material's own weight will not be significant
-%TODO: get length where buckling becomes dominant failure mode
 
 %% reference
 %note: freedom units (psi, lb/ft3)
@@ -25,16 +23,16 @@ i = 1; %count variable to avoid infinite
 while (minFOS < reqFOS)% || minFOS > 2.3 && i < 10000)
     tWall = tWall + 0.005;
     aC = pi * (ro^2 - (ro-tWall)^2); % [in^2]
-    
+
     % Buckling length
     I = pi/4 * (ro^4 - (ro-tWall)^4);
     maxL = sqrt((n*pi^2*E*I) / (Yield*aC/minFOS));
-    
+
     Tstress = T/aC;
-    Wstress = rho*maxL; 
+    Wstress = rho*maxL;
     stress = Tstress + Wstress;
     minFOS = Yield/stress;
-    
+
     i = i + 1;
 end
 

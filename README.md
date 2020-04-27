@@ -1,7 +1,7 @@
 # Rocket Optimization/Sizing Script
-## TODO: 
-- add material library struct
-- implement rand material choice for body tube
+## TODO:
+-modify get_buckling to share load with tanks
+-modify get_buckling based on Bruhn Paper
 
 
 Units: FPS
