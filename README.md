@@ -1,7 +1,6 @@
 # Rocket Optimization/Sizing Script
 ## TODO:
--modify get_buckling to share load with tanks
--modify get_buckling based on Bruhn Paper
+-combined load calc for ox tank
 
 
 Units: FPS
