@@ -52,7 +52,7 @@ geo = rocket.geo;
         prop.I = 6500;%4000 + rand*(8000 - 4000); % will fix
         prop.t_b = prop.I / prop.T_avg;
         prop.OF = 6; % Assume not varied
-        prop.P_c = 500*144; % [psf] Assumed for now
+        prop.P_c = 575*144; % [psf] Assumed for now
         prop.h_opt = 0;
         
         rocket.prop = prop;
