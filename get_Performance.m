@@ -5,6 +5,13 @@ function [rocket] = get_Performance(rocket)
 % off the rail.
 
     %% Initial values
+    % nose cone sizing
+%     load MachArray.mat Mach_Excel
+%     load Cd.mat Cd
+%     NC = rocket.geo.nose.NC;
+    Mach_Excel = readmatrix('h_opt_test.csv','Range','A1:A500');
+    Cd = readmatrix('h_opt_test.csv','Range','C1:C500');
+
     length_rail = 20 - rocket.geo.total.L + rocket.weight.total.CG;
     theta_rail = deg2rad(-4);
     v_WG = [-22.005, 0].'; % 15 mph horizontal wind
@@ -68,7 +75,7 @@ function [rocket] = get_Performance(rocket)
     while t(i) <= t_f && v(2,i) >= 0 && isreal(x(:,i)) % apogee
         %% Current State Calculations
         % Atmosphere
-        [atm_rho, atm_P, atm_T] = get_Atmosphere(x(i),z_0);
+        [atm_rho, atm_P, atm_T] = get_Atmosphere(x(2,i),z_0);
         
         % Thrust
         if W(2,i) > W_dry
@@ -84,7 +91,8 @@ function [rocket] = get_Performance(rocket)
         % Drag
         q = 0.5 * atm_rho * rssq(v(:,i))^2;
         if rssq(v(:,i)) ~= 0
-            [C_D(i), Mach(i)] = get_CD(rocket, x(i)+z_0, rssq(v(:,i)));
+            [C_D(i), Mach(i)] = get_CD_Data(rssq(v(:,i)),atm_T,Cd,Mach_Excel);
+            %[C_D(i), Mach(i)] = get_CD(rocket,z_0+x(2,i),rssq(v(:,i)));
         else
             C_D(i) = 0;
             Mach(i) = 0;
@@ -151,12 +159,10 @@ function [rocket] = get_Performance(rocket)
         v_ORS = 0;
     end
     
-    
-    
     rocket.data.performance.z_max = max(x(2,:));
     rocket.data.performance.Ma_max = max(Mach);
     rocket.data.performance.v_ORS = v_ORS;
     rocket.data.performance.v_max = max(rssq(v));
-    rocket.data.performance.v_apogee = 
+    rocket.data.performance.v_apogee = rssq(v(:,i-1));
     rocket.data.performance.a_max = max(rssq(a));
     

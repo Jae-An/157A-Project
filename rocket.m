@@ -17,8 +17,8 @@ rocket.geo = struct('nose',[],'body',[],'tail',[],'fins',[],'press_tank',[],'ox_
     rocket.geo.CC       = struct('D',[],'L',[],'t',[],'x',[],'material',[]);
     rocket.geo.fuel     = struct('D_o',[],'D_i',[],'L',[]);
     rocket.geo.misc     = struct('L',[],'x',[]);
-        % Contains main, recovery bulkhead, drogue, avionics, thrust
-        % bulkhead, plumbing (L and x will be arrays)
+        % Contains 7 elements: main, recovery bulkhead, drogue, avionics, thrust
+        % bulkhead, plumbing, nozzle (L and x will be arrays)
     
 %% Weights and Inertias    
 rocket.weight = struct('total',[],'nose',[],'body',[],'tail',[],'fins',[],'press_tank',[],'ox_tank',[],'CC',[],'misc',[]);
@@ -45,9 +45,9 @@ rocket.aero = struct('total',[],'nose',[],'body',[],'tail',[],'fins',[]);
     rocket.aero.fins = struct('CD',[]); %'aoa',[],'CNa',[],'TC',[],'SS',[],'SL',[],'MC',[],'N',[],'W',[],'m',[],'t',[],'x',[],'CG',[]);  
 
 %% Propulsion
-rocket.prop = struct('T_avg',1000,'I',[],'Isp',[],'t_b',[],'OF',[],'A_e',[],'P_c',[]);
+rocket.prop = struct('T_avg',1000,'I',[],'Isp',[],'t_b',[],'OF',[],'A_e',[],'P_c',[],'h_opt',15000);
 
 %% Performance, Aerodynamics, Stability
 rocket.data = struct('requirements',[],'performance',[]);
-    rocket.data.requirements = struct('v_ORS',100,'z_max',30000,'MOS',1.25); % Add stall angle?
-    rocket.data.performance = struct('v_ORS',[],'z_max',[],'MOS',[],'Ma_max',[],'v_max',[],'a_max',[]);
+    rocket.data.requirements = struct('v_ORS',100,'z_max',30000,'MOS',2); % Add stall angle?
+    rocket.data.performance = struct('v_ORS',[],'z_max',[],'MOS',[],'Ma_max',[],'v_max',[],'a_max',[],'v_apogee',[]);

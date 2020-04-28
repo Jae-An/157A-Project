@@ -16,7 +16,7 @@ X_b = body.x + body.L/2;
 sumCNa_nb = CNa_n + CNa_b;
 sumCNaX_nb = CNa_n*X_n + CNa_b*X_b;
 
-X_CP = rocket.weight.total.CG + 1.25*body.D;
+X_CP = rocket.weight.total.CG_wet + rocket.data.requirements.MOS*body.D;
 L = rocket.geo.total.L;
 if fins.N == 3
     beta = 13.85;
