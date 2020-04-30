@@ -4,7 +4,7 @@ function [rocket] = get_Buckling(rocket)
     % assumed load is avg thrust plus drag at max V(but sea level air density. not accurate, but is an overestimate for safety)
     % Change j at start of script to switch to load bearing tanks (0,1) = (skin,skin+tank)
 
-j=0; %to retain original function while modifying
+j=1; %to retain original function while modifying
 
 %% Load Bearing Skin
 if(j==0)
@@ -43,6 +43,7 @@ while (minFOS < reqFOS)
     i = i + 1;
 end
 
+tWall = max([tWall, 0.125/12]);
 rocket.geo.body.l_buckle = maxL;
 rocket.geo.body.t = tWall; % [ft]
 end
@@ -92,7 +93,7 @@ if(j==1)
     aC = (F-F_tank)/stress; % [ft^2]
     ro = sqrt(aC/pi + ro_tank);
     tWall = ro-ro_tank;
-
+    tWall = max([tWall, 0.125/12]);
     d_body = 2*ro;
 
     % Buckling length

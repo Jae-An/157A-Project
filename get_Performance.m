@@ -1,39 +1,51 @@
 function [rocket] = get_Performance(rocket)
 % 2DOF sim. 
-% Without rotational dynamics, this assumes that there is no wind
-% but the rocket instantaneously changes to new flight path, pitch angle
+% Without rotational dynamics, this assumes that there is no angle of
+% attack but the rocket instantaneously changes to new flight path, pitch angle
 % off the rail.
 
     %% Initial values
-    % nose cone sizing
-%     load MachArray.mat Mach_Excel
-%     load Cd.mat Cd
-%     NC = rocket.geo.nose.NC;
-    Mach_Excel = readmatrix('h_opt_test.csv','Range','A1:A500');
-    Cd = readmatrix('h_opt_test.csv','Range','C1:C500');
-
-    length_rail = 20 - rocket.geo.total.L + rocket.weight.total.CG;
+    % General
+    length_rail = 20 - rocket.geo.total.L + rocket.weight.total.CG_wet;
     theta_rail = deg2rad(-4);
     v_WG = [-22.005, 0].'; % 15 mph horizontal wind
     
-    t_i = 0; t_f = 160; dt = 0.01;
+    % Time
+    t_i = 0; t_f = 1000; dt = 0.01;
     t_steps = (t_f-t_i)/dt + 1;
     t = linspace(t_i,t_f,t_steps);
     
+    % Weight
     W_wet = rocket.weight.total.W_wet;
     W_dry = rocket.weight.total.W_dry;
     g = 32.174;
-
-    T_avg = rocket.prop.T_avg;
+    
+    % Thrust
+    load('Thrust_data.mat')
+    T_data = get_Thrust(time_vec,Thrust_vec,dt);
+    T_data(t_steps) = 0;
     Isp = rocket.prop.Isp;
     A_e = rocket.prop.A_e;
+    t_b = rocket.prop.t_b;
     
+    % Drag
+    Mach_arr = readmatrix('CD Test.csv','Range','A1:A500');
+    CD_arr = readmatrix('CD Test.csv','Range','C1:C500');
+    CD_drogue = 0.97;
+    CD_main = 0.97;
     d_body = rocket.geo.body.D;
+    d_drogue = 4;
+    d_main = 10;
     A_c = pi*(d_body/2)^2;
-
+    A_drogue = pi*(d_drogue/2)^2;
+    A_main = pi*(d_main/2)^2;
+    main_alt = 700; % main deployment altitude
+    
+    % Initial State
     v_i = [0,0].';
     x_i = [0,0].';
-    z_0 = 0; % Initial altitude above sea level
+    z_0 = 0;
+    h_opt = rocket.prop.h_opt;
     
     p_i = theta_rail;
     
@@ -59,7 +71,7 @@ function [rocket] = get_Performance(rocket)
     W(2,1) = W_wet;
     m = W(2,1) / g;
 
-    T_mag(1) = T_avg;
+    T_mag(1) = T_data(1);
     
     v(:,1) = v_i;
     x(:,1) = x_i;
@@ -68,18 +80,18 @@ function [rocket] = get_Performance(rocket)
     phi(1) = p_i;    
     off_rail = false;
     
-    [atm_rho_i, atm_P_i, atm_T_i] = get_Atmosphere(0,z_0);
+    [~, P_e, ~] = get_Atmosphere(0,h_opt);
 
     %% Simulate
     i = 1;
-    while t(i) <= t_f && v(2,i) >= 0 && isreal(x(:,i)) % apogee
+    while t(i) <= t_f && x(2,i) >= 0 && isreal(x(:,i)) % apogee
         %% Current State Calculations
         % Atmosphere
         [atm_rho, atm_P, atm_T] = get_Atmosphere(x(2,i),z_0);
         
         % Thrust
         if W(2,i) > W_dry
-            T_mag(i) = T_avg + (atm_P_i-atm_P)*A_e;
+            T_mag(i) = T_data(i) + (P_e-atm_P)*A_e;
         else
             T_mag(i) = 0;
         end
@@ -91,18 +103,27 @@ function [rocket] = get_Performance(rocket)
         % Drag
         q = 0.5 * atm_rho * rssq(v(:,i))^2;
         if rssq(v(:,i)) ~= 0
-            [C_D(i), Mach(i)] = get_CD_Data(rssq(v(:,i)),atm_T,Cd,Mach_Excel);
-            %[C_D(i), Mach(i)] = get_CD(rocket,z_0+x(2,i),rssq(v(:,i)));
+            [C_D(i), Mach(i)] = get_CD_Data(rssq(v(:,i)),atm_T,CD_arr,Mach_arr);
+            if v(2,i)<0 && t(i)>t_b
+                if x(2,i) > main_alt 
+                    D_product = A_drogue * CD_drogue; % rocket body drag relatively negligible
+                elseif x(2,i) <= main_alt
+                    D_product = A_main * CD_main; % drogue and rocket body drag relatively negligible
+                end
+            else
+                D_product = A_c * C_D(i);
+            end
         else
             C_D(i) = 0;
             Mach(i) = 0;
+            D_product = 0;
         end
-        D(:,i) = q * C_D(i) * A_c * [sin(phi(i)), -cos(phi(i))].';
+        D(:,i) = q * D_product * [sin(phi(i)), -cos(phi(i))].';
             
         % Simple Rail Dynamics (No lift, thrust misalignment, drag is
         % parallel to rail
         if dist(i) <= length_rail
-            A = [1, 1; rocket.geo.total.L-rocket.weight.total.CG, 0];
+            A = [1, 1; rocket.geo.total.L-rocket.weight.total.CG_wet, 0];
             B = [W(2,i)*sin(theta_rail); 0];
             R = sum(linsolve(A,B)) * [cos(theta_rail), sin(theta_rail)].';      
         else
@@ -114,7 +135,7 @@ function [rocket] = get_Performance(rocket)
         a(:,i) = F(:,i) / m;
 
         %% Calculate Future State
-        if W(2,i) - W_dot*dt > W_dry
+        if t(i+1) <= t_b
             W(2,i+1) = W(2,i) - W_dot*dt;
             m = W(2,i+1) / g;
         else
@@ -124,12 +145,13 @@ function [rocket] = get_Performance(rocket)
 
         % Euler method
         v(:,i+1) = v(:,i) + a(:,i)*dt;
+        v_RW = v(:,i+1) - v_WG;
         x(:,i+1) = x(:,i) + v(:,i)*dt;
         dist(i+1) = dist(i) + abs(rssq(v(:,i))*dt);
         
         % Instantaneous rotation off rail
         if ~off_rail && dist(i+1)>length_rail
-            v_RW = v(:,i+1) - v_WG;
+            
             AOA = atan(-v_RW(1)/v_RW(2)) - theta_rail;
             RotMat = [cos(AOA), -sin(AOA); sin(AOA), cos(AOA)]; 
             v(:,i+1) = RotMat * v(:,i+1);
@@ -141,9 +163,9 @@ function [rocket] = get_Performance(rocket)
         
         % Flight Path angle calculation
         if v(2,i+1)>=0
-            phi(i+1) = asin(-v(1,i+1)/rssq(v(:,i+1)));
+            phi(i+1) = asin(-v_RW(1)/rssq(v_RW));
         else
-            phi(i+1) = pi - asin(-v(1,i+1)/rssq(v(:,i+1)));
+            phi(i+1) = pi - asin(-v_RW(1)/rssq(v_RW));
         end
         
         % Move time forward

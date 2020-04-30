@@ -12,7 +12,7 @@ geo = rocket.geo;
 
     % rocket.geo.nose = struct('D',[],'L',[],'t',[],'x',0,'A_p',[]);
         geo.nose.NC = 1; % VKO
-        geo.nose.D = 6/12; %(4 + rand*(6 - 4)) / 12; % [ft]
+        geo.nose.D = 6.25/12; %(4 + rand*(6 - 4)) / 12; % [ft]
         FR = 5; % + rand*(5 - 3);
         geo.nose.L = FR * geo.nose.D;
         geo.nose.t = 0.3/12; % keep constant
@@ -49,39 +49,38 @@ geo = rocket.geo;
 
         prop.T_avg = 1000; % [lbf] 
         prop.Isp = 200;
-        prop.I = 6500;%4000 + rand*(8000 - 4000); % will fix
+        prop.I = 7600;%4000 + rand*(8000 - 4000); % will fix
         prop.t_b = prop.I / prop.T_avg;
         prop.OF = 6; % Assume not varied
         prop.P_c = 575*144; % [psf] Assumed for now
-        prop.h_opt = 0;
+        prop.h_opt = 17000;
         
         rocket.prop = prop;
         rocket.geo.ox_t.D = geo.body.D - 2*rocket.geo.body.t; % For now approximate as wide tanks
         rocket = get_Motor(rocket);
     
     % Miscellaneous + Finishing prop geo
-    % (main, rec. bulkhead, drogue, avionics, thr bulkhead, plumbing)    
+    % (avionics, nose bulkead, drogue, bulkhead, main, bulkhead,
+    %  plumbing, nozzle)
     geo = rocket.geo;
-    geo.misc.L(1:6) = [0.75, 0.0625, 0.5, 0.5, 0.05, 0.25]; % ALL ESTIMATES
-    geo.CC.x = geo.total.L - geo.CC.L;
+    
+    geo.misc.L(1:7) = [0, 0.5/12, 3.5/12, 0.5/12, 8.5/12, 0.5/12, 0.5]; % ALL ESTIMATES
+    % FIX AVIONICS
+    
+    geo.CC.x = geo.misc.x(8) - geo.CC.L; % CC ends at nozzle
     geo.fuel.x = geo.CC.x + 0.05*geo.CC.L; % fuel in middle of CC
-    geo.ox_t.x = geo.CC.x - geo.misc.L(5) - geo.ox_t.L;
-    geo.ox.x = geo.ox_t.x + 2*geo.ox_t.t;
+    geo.ox_t.x = geo.CC.x - geo.misc.L(7) - geo.ox_t.L;
+    geo.ox.x = geo.ox_t.x + geo.ox_t.t;
     
-    geo.misc.x = geo.misc.L;
-    dx = 1/12; % [ft] Spacing between consecutive components
-    geo.misc.x(1) = geo.payload.x + geo.payload.L + dx;
-    for i = 2:4
-        geo.misc.x(i) = geo.misc.x(i-1) + geo.misc.L(i-1) + dx;
-    end
-    geo.misc.x(5) = geo.ox_t.x - geo.misc.L(4);
-    geo.misc.x(6) = geo.ox_t.x + geo.ox_t.L + geo.misc.L(5);
-    
-
+    geo.misc.x(2) = geo.payload.x - geo.misc.L(2);
+    geo.misc.x(3) = geo.nose.L + geo.nose.D - geo.misc.L(3);
+    geo.misc.x(1) = geo.misc.x(3) - geo.misc.L(3);
+    geo.misc.x(4) = geo.misc.x(3) + geo.misc.L(3);
+    geo.misc.x(5) = geo.misc.x(4) + geo.misc.L(4);
+    geo.misc.x(6) = geo.misc.x(5) + geo.misc.L(5);
+    geo.misc.x(7) = geo.ox_t.x + geo.ox_t.L;
     
     rocket.geo = geo;
-
-
 
 %% Weight
 W = rocket.weight;       
@@ -96,7 +95,7 @@ W = rocket.weight;
     % Tail (empty for now)
     
     % Fins (Pt mass)
-    W.fins.W = 4; % Guess from Endurance, conservative estimate
+    W.fins.W = 1;
     W.fins.CG = geo.fins.x; % At end of rocket, conservative approximation
 
     % Payload (Cylinder)
@@ -104,9 +103,8 @@ W = rocket.weight;
     W.payload.CG = geo.payload.x + geo.payload.L/2;
 
     % Misc (Cylinders (diameter doesn't matter))
-    W.misc.W(1:6) = [2.3, 3, 1.5, 2.5, 1.5, 4];
+    W.misc.W(1:7) = [2.3, 1.7, 0.44, 0.42, 0.92, 1.7, 3];
     W.misc.CG = geo.misc.x + geo.misc.L/2;
-    % main, rec. bulkhead, drogue, avionics, thr bulkhead, plumbing
     
     % Propulsion
     W.ox_t.CG = geo.ox_t.x + geo.ox_t.L/2;

@@ -14,8 +14,9 @@ function [is_Good] = set_PassFail(rocket)
         % Apogee check
         is_Good = false;
     
-    elseif rocket.data.performance.MOS < rocket.data.requirements.MOS ...
-            || ~isreal(rocket.data.performance.MOS)
+    elseif rocket.data.performance.MOS_dry < rocket.data.requirements.MOS ...
+        || rocket.data.performance.MOS_wet < rocket.data.requirements.MOS ...
+        || ~isreal([rocket.data.performance.MOS_dry, rocket.data.performance.MOS_wet])
         % Margin of stability check
         is_Good = false;
         
