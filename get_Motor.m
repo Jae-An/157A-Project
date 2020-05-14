@@ -18,38 +18,39 @@ OF = rocket.prop.OF;           %ox-fuel ratio, CHOSEN VALUE
 P_c = rocket.prop.P_c / 144;         %chamber pressure, [psi], CHOSEN VALUE
 D_oxt = 0.5 * 12;%rocket.geo.ox_t.D;     % [in]tank diameter [in]   CHOSEN VALUE
 h_opt = rocket.prop.h_opt;     % altitude of optimization [ft]
+
 % Material properties
 FOS = 1.5;                     %factor of safety, CHOSEN VALUE
 % Ox Tank
 sig_yield_tank = rocket.geo.ox_t.material.yield;      %tensile strength, [psf]       
 sig_working_tank = sig_yield_tank / FOS;              %working stress, [psf]
-rho_tank = rocket.geo.ox_t.material.density / g;          %density, [slug/ft3]
+rho_tank = rocket.geo.ox_t.material.density / g;      %density, [slug/ft3]
 % CC
 sig_yield_cc = rocket.geo.CC.material.yield;          %tensile strength, [psf]       
 sig_working_cc = sig_yield_cc / FOS;                  %working stress, [psf]
-rho_cc = rocket.geo.CC.material.density / g;              %density, [slug/ft3]
+rho_cc = rocket.geo.CC.material.density / g;          %density, [slug/ft3]
 
 
 %fuel density
-rho_htpb = 1.785;             %density cured htpb, [sl/ft3]
-rho_paraffin = 1.746;         %density paraffin, [sl/ft3]
+rho_htpb = 1.785;             % density cured htpb, [sl/ft3]
+rho_paraffin = 1.746;         % density paraffin, [sl/ft3]
 
 percent_htpb = .5;
 percent_paraffin = .5;
 
-rho_f = percent_htpb*rho_htpb + percent_paraffin*rho_paraffin; %[lb/ft3]
-rho_ox = 1.4984;                 %liquid n2o density [sl/ft3]
+rho_f = percent_htpb*rho_htpb + percent_paraffin*rho_paraffin; % [lb/ft3]
+rho_ox = 1.4984;                 % liquid n2o density [sl/ft3]
 
 %calculate mass flow rate
-mdot_tot = T / Isp /g; %total mass flow rate, [sl/s]
-mdot_ox = OF / (OF + 1) * mdot_tot;      %ox mass flowrate [sl/s]
-mdot_f_reqd = 1 / (OF + 1) * mdot_tot;       %fuel mdot [sl/s]
+mdot_tot = T / Isp /g;                  % total mass flow rate, [sl/s]
+mdot_ox = OF / (OF + 1) * mdot_tot;     % ox mass flowrate [sl/s]
+mdot_f_reqd = 1 / (OF + 1) * mdot_tot;  % fuel mdot [sl/s]
 
 %calculate weight
-m_ox = mdot_ox * tb;              %ox mass [sl]
-m_f = mdot_f_reqd * tb;         %fuel mass [sl]
-theo_sliver_frac = 0.298;       %theoretical sliver fraction for circ. port
-m_f = m_f * (1+theo_sliver_frac);   % account for leftover unburnt fuel
+m_ox = mdot_ox * tb;              % ox mass [sl]
+m_f = mdot_f_reqd * tb;           % fuel mass [sl]
+theo_sliver_frac = 0.298;         % theoretical sliver fraction for circ. port
+m_f = m_f * (1+theo_sliver_frac); % account for leftover unburnt fuel
 
 rocket.weight.fuel.W = m_f * g;
 rocket.weight.ox.W = m_ox * g;
@@ -57,11 +58,11 @@ rocket.weight.total.W_propellant = (m_f + m_ox)*g;
 
 %% Tank sizing
 P_inj = 0.2 * P_c;              % [psi] pressure across injector, lower bound
-P_feed = 50;                % [psi] pressure across feed sys
-P_tank = (P_c + P_inj + P_feed) * 144;  % [psf] ox tank pressure
-t_tank = (D_oxt/12)/2 * P_tank / sig_working_tank;     % [ft]tank thickness, [ft]
+P_feed = 50;                    % [psi] pressure across feed sys
+P_tank = (P_c + P_inj + P_feed) * 144;              % [psf] ox tank pressure
+t_tank = (D_oxt/12)/2 * P_tank / sig_working_tank;  % [ft]tank thickness
 
-V_ox = m_ox / rho_ox;       %ox volume [ft3]
+V_ox = m_ox / rho_ox;           %ox volume [ft3]
 L_tank = (V_ox-((pi/6)*((D_oxt/12)-2*t_tank)^3)) / (pi * ((D_oxt/12)-2*t_tank)^2 / 4); %cylindrical tank length [ft]
 V_tank = (pi/6)*((D_oxt/12)^3 - ((D_oxt/12)-2*t_tank)^3) + (pi/4)*L_tank*((D_oxt/12)^2 - ((D_oxt/12)-2*t_tank)^2);
 W_tank = V_tank * rho_tank * g; %tank mass, [lb]
@@ -72,23 +73,23 @@ rocket.geo.ox.L = L_tank;
 rocket.weight.ox_t.W = W_tank;
 
 %% Size CC thickness + weight
-V_f = m_f / rho_f;              %fuel volume [ft3]
-D_cc = D_oxt/12;
-t_cc = D_cc/2 * (P_c*144) / sig_working_cc;
-D_o_fuel = D_cc - 2*t_cc;               %outer diameter of fuel
+V_f = m_f / rho_f;              % [ft3] fuel volume
+D_cc = D_oxt/12;                % [ft] CC same diameter as ox tank
+t_cc = D_cc/2 * (P_c*144) / sig_working_cc; % [ft] CC thickness
+D_o_fuel = D_cc - 2*t_cc;       % [ft] outer diameter of fuel
 rocket.geo.CC.D = D_cc;
 rocket.geo.CC.t = t_cc;
 rocket.geo.fuel.D_o = D_o_fuel;
 
 %% Fuel grain geometry
 %initialize array of diameters
-D_i_fuel = (0.1:0.1:D_o_fuel*12 - 0.1) / 12 ;  % inner diameter [ft]
-t_init = 0.5 * (D_oxt - D_i_fuel);     % initial thickness of grain, [ft]
+D_i_fuel = (0.1:0.1:D_o_fuel*12 - 0.1) / 12 ;   % inner diameter [ft]
+t_init = 0.5 * (D_oxt - D_i_fuel);              % initial thickness of grain, [ft]
 
 % calc grain geometries
 L_grain = V_f ./ (pi/4 * (D_o_fuel^2 - D_i_fuel.^2)); %grain length, [ft]
-A_cs = pi ./ 4 * D_i_fuel.^2;         % grain port area   [ft2]
-A_b = pi * D_i_fuel .* L_grain;       %grain burn area  [ft2]
+A_cs = pi ./ 4 * D_i_fuel.^2;                         % grain port area   [ft2]
+A_b = pi * D_i_fuel .* L_grain;                       %grain burn area  [ft2]
 
 LD = L_grain ./ D_oxt;            %length-diam ratio of grain
 %stanford hybrid paper calls for L/D >= 4, for proper propellant mixing (?)

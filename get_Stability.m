@@ -42,7 +42,9 @@ fins.MC = sqrt(fins.SS^2 + (fins.SL+fins.TC/2 - fins.RC/2)^2);
 fins.t = 0.06*fins.RC+fins.TC/2;
 fins.x = L - fins.RC; % fins located at end of rocket
 
-V_fins = fins.N*(0.5*(fins.RC+fins.TC)*fins.SS)*fins.t;
+a_coef = (fins.TC - fins.RC)/fins.SS;
+b_coef = fins.RC;
+V_fins = 4 * 5.685 / 12^3;%4 * 0.0042 * ((1/3)*(a_coef^2)*(fins.SS^3) + b_coef*fins.SS^2 + b_coef^2*fins.SS);
 weight.fins.W = V_fins * 111.24; % [lb] Uses carbon fiber density
 weight.fins.CG = fins.x + (11/18 * fins.RC);
 

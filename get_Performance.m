@@ -8,7 +8,7 @@ function [rocket] = get_Performance(rocket)
     % General
     length_rail = 20 - rocket.geo.total.L + rocket.weight.total.CG_wet;
     theta_rail = deg2rad(-4);
-    v_WG = [-22.005, 0].'; % 15 mph horizontal wind
+    v_WG = [-22.005, 0].'; % 15 mph horizontal wind wrt ground inertial frame
     
     % Time
     t_i = 0; t_f = 1000; dt = 0.01;
@@ -29,8 +29,9 @@ function [rocket] = get_Performance(rocket)
     t_b = rocket.prop.t_b;
     
     % Drag
-    Mach_arr = readmatrix('CD Test.csv','Range','A1:A500');
-    CD_arr = readmatrix('CD Test.csv','Range','C1:C500');
+    Mach_arr = readmatrix('CD Test.csv','Range','A1:A500'); % RASAero II Data
+    CD_off_arr = readmatrix('CD Test.csv','Range','F1:F500');
+    CD_on_arr = readmatrix('CD Test.csv','Range','G1:G500');
     CD_drogue = 0.97;
     CD_main = 0.97;
     d_body = rocket.geo.body.D;
@@ -45,7 +46,7 @@ function [rocket] = get_Performance(rocket)
     v_i = [0,0].';
     x_i = [0,0].';
     z_0 = 0;
-    h_opt = rocket.prop.h_opt;
+    h_opt = 0;%rocket.prop.h_opt;
     
     p_i = theta_rail;
     
@@ -55,6 +56,8 @@ function [rocket] = get_Performance(rocket)
         T_mag = zeros(1,t_steps);
     D = zeros(2,t_steps);
         C_D = zeros(1,t_steps);
+        C_D_prime = zeros(1,t_steps);
+        q = zeros(1,t_steps);
     F = zeros(2,t_steps);
     
     Mach = zeros(1,t_steps);
@@ -101,9 +104,15 @@ function [rocket] = get_Performance(rocket)
         W_dot = T_mag(i) / Isp;
         
         % Drag
-        q = 0.5 * atm_rho * rssq(v(:,i))^2;
+        q(i) = 0.5 * atm_rho * rssq(v(:,i))^2;
         if rssq(v(:,i)) ~= 0
-            [C_D(i), Mach(i)] = get_CD_Data(rssq(v(:,i)),atm_T,CD_arr,Mach_arr);
+            if t(i) <= t_b
+                [C_D(i), Mach(i)] = get_CD_Data(rssq(v(:,i)),atm_T,CD_on_arr,Mach_arr);
+                [C_D_prime(i), ~] = get_CD(rocket, x(2,i)+z_0, rssq(v_RW));
+            else
+                [C_D(i), Mach(i)] = get_CD_Data(rssq(v(:,i)),atm_T,CD_off_arr,Mach_arr);
+                [C_D_prime(i), ~] = get_CD(rocket, x(2,i)+z_0, rssq(v_RW));
+            end
             if v(2,i)<0 && t(i)>t_b
                 if x(2,i) > main_alt 
                     D_product = A_drogue * CD_drogue; % rocket body drag relatively negligible
@@ -118,14 +127,14 @@ function [rocket] = get_Performance(rocket)
             Mach(i) = 0;
             D_product = 0;
         end
-        D(:,i) = q * D_product * [sin(phi(i)), -cos(phi(i))].';
+        D(:,i) = q(i) * D_product * [sin(phi(i)), -cos(phi(i))].';
             
         % Simple Rail Dynamics (No lift, thrust misalignment, drag is
         % parallel to rail
         if dist(i) <= length_rail
             A = [1, 1; rocket.geo.total.L-rocket.weight.total.CG_wet, 0];
             B = [W(2,i)*sin(theta_rail); 0];
-            R = sum(linsolve(A,B)) * [cos(theta_rail), sin(theta_rail)].';      
+            R = sum(linsolve(A,B)) * [cos(theta_rail), sin(theta_rail)].'; % [lb] reaction force from rail   
         else
             R = 0;
         end
@@ -150,11 +159,11 @@ function [rocket] = get_Performance(rocket)
         dist(i+1) = dist(i) + abs(rssq(v(:,i))*dt);
         
         % Instantaneous rotation off rail
-        if ~off_rail && dist(i+1)>length_rail
-            
+        if ~off_rail && dist(i+1)>length_rail % about to leave rail         
             AOA = atan(-v_RW(1)/v_RW(2)) - theta_rail;
             RotMat = [cos(AOA), -sin(AOA); sin(AOA), cos(AOA)]; 
             v(:,i+1) = RotMat * v(:,i+1);
+            v_RW = v(:,i+1) - v_WG;
             p(i+1) = asin(-v(1,i+1)/rssq(v(:,i+1)));
             off_rail = true;
         else
@@ -171,7 +180,7 @@ function [rocket] = get_Performance(rocket)
         % Move time forward
         i = i + 1;
     end
-    
+
     %% Save data
     v_ORS = rssq(v);
     v_ORS = v_ORS(dist > length_rail);
@@ -181,10 +190,61 @@ function [rocket] = get_Performance(rocket)
         v_ORS = 0;
     end
     
-    rocket.data.performance.z_max = max(x(2,:));
+    [rocket.data.performance.z_max, i_a] = max(x(2,:));
+    rocket.data.performance.t_apogee = t(i_a);
     rocket.data.performance.Ma_max = max(Mach);
     rocket.data.performance.v_ORS = v_ORS;
     rocket.data.performance.v_max = max(rssq(v));
-    rocket.data.performance.v_apogee = rssq(v(:,i-1));
+    rocket.data.performance.v_apogee = rssq(v(:,i_a));
     rocket.data.performance.a_max = max(rssq(a));
+    rocket.data.performance.D_max = max(rssq(D));
+    
+    %% Plotting
+    RAS = readmatrix('Flight Test.csv');
+    OPR = readmatrix('OpenRocket G10Sim.csv');
+    % Trajectory
+    figure(1)
+    plot(x(1,1:i)/5280,x(2,1:i) , RAS(:,24)/5280,RAS(:,23),'--' , OPR(:,5)/5280,OPR(:,2),':k')
+    xlabel('Distance [mi]')
+    ylabel('Altitude [ft]')
+    legend('Simulated', 'RASAero Data', 'OpenRocket Data')
+    title('Flight Trajectory')
+    grid on
+    
+    % Altitude vs. Time
+    figure(2)
+    plot(t(1:i),x(2,1:i), RAS(:,1),RAS(:,23),'--', OPR(:,1),OPR(:,2),':k')
+    xlabel('Time [s]')
+    ylabel('Altitude [ft]')
+    title('Altitude Comparison')
+    legend('Simulated', 'RASAero Data', 'OpenRocket Data')
+    grid on
+    
+    % Mach (velocity) vs. Time
+    figure(3)
+    plot(t(1:i),Mach(1:i), RAS(:,1),RAS(:,4),'--', OPR(:,1),OPR(:,6),':k')
+    xlabel('Time [s]')
+    ylabel('Mach number')
+    title('Mach Number Comparison')
+    legend('Simulated', 'RASAero Data', 'OpenRocket Data')
+    grid on
+    
+    % Acceleration vs. Time
+    figure(4)
+    plot(t(1:i),a(2,1:i), RAS(:,1),RAS(:,16),'--', OPR(:,1),OPR(:,4),':k')
+    xlabel('Time [s]')
+    ylabel('Acceleration [ft/s^{2}]')
+    title('Vertical Acceleration Comparison')
+    legend('Simulated','RASAero Data','OpenRocket Data')
+    grid on
+    
+    % Pitch Angle vs. Time
+    [~,i_a_data] = max(RAS(:,23)); 
+    figure(5)
+    plot(t(1:i_a),rad2deg(p(1:i_a))+90 ,  RAS((1:i_a_data),1),RAS((1:i_a_data),21),'--', ...
+         t(1:i_a),rad2deg(phi(1:i_a))+90, RAS(1:i_a_data,1),RAS(1:i_a_data,22),'--')
+    legend('Pitch (Sim)','Pitch (RAS)', 'Flight Path Angle (Sim)','Flight Path Angle (RAS)')
+    grid on
+    
+    
     

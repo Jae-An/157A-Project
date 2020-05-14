@@ -4,7 +4,7 @@ function [rocket] = get_Buckling(rocket)
     % assumed load is avg thrust plus drag at max V(but sea level air density. not accurate, but is an overestimate for safety)
     % Change j at start of script to switch to load bearing tanks (0,1) = (skin,skin+tank)
 
-j=1; %to retain original function while modifying
+j=0; %to retain original function while modifying
 
 %% Load Bearing Skin
 if(j==0)
@@ -76,7 +76,7 @@ if(j==1)
     T = rocket.prop.T_avg;
     Swet_approx =  pi*ro^2;
     air = 0.0765; %density of air [lbm/ft^3] assuming sea level as a drag overestimate
-    D = .5*air*rocket.data.performance.v_max^2*Swet_approx*rocket.aero.total.CD; %[lbm-ft/s^2]
+    D = rocket.data.performance.D_max; %.5*air*rocket.data.performance.v_max^2*Swet_approx*rocket.aero.total.CD; %[lbm-ft/s^2]
     F = T+D;
 
     %% Stress Calc and Wall thickness solver
@@ -89,7 +89,7 @@ if(j==1)
     F_tank = stress*ac_tank;
 
     % calculate body tube wall thickness and consequently, the OD of the body tube
-    stress = Yield/minFOS + rho*L;
+    stress = Yield/minFOS + rho*l_body;
     aC = (F-F_tank)/stress; % [ft^2]
     ro = sqrt(aC/pi + ro_tank);
     tWall = ro-ro_tank;
@@ -100,7 +100,7 @@ if(j==1)
     I = pi/4 * (ro^4 - (ro_tank)^4);  % [ft^4]
     I_tank = pi/4 * (ro_tank^4 - (ro_tank-rocket.geo.ox_t.t)^4);
     maxL = sqrt((n*pi^2*E*I) / (Yield*aC/minFOS)); % [ft]
-    maxL_tank = sqrt((n*pi^2*E_tank*I_tank) / (Yield_tank*aC_tank/minFOS));
+    maxL_tank = sqrt((n*pi^2*E_tank*I_tank) / (Yield_tank*ac_tank/minFOS));
 
 
     rocket.geo.body.D = d_body;
