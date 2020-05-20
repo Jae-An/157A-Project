@@ -53,7 +53,7 @@ geo = rocket.geo;
 
     rocket.prop = prop;
     rocket.geo.ox_t.D = geo.body.D - 2*rocket.geo.body.t;   % Tank diameter is body inner diameter
-    rocket = get_Motor(rocket);    % Sizes rest of propulsion system (tanks, CC, fuel, etc.)
+    rocket = get_Motor_new(rocket);    % Sizes rest of propulsion system (tanks, CC, fuel, etc.)
     
     % Miscellaneous + Finishing prop geo
     % Order: nose bulkhead, drogue, payload bulkhead, avionics, main, bulkhead,

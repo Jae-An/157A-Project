@@ -124,8 +124,8 @@ while m_o_old >= 0  && p_c_old <= p_t_old   %run until ox is depleted
     
     %estimate cstar
     OF = mdot_o_old / mdot_f_old;
-    cstar = interp1(OFs,cstars, OF, 'linear', 5000);
-    cstar = cstar * 0.8;           % 90% combustion efficiency
+    cstar(step) = interp1(OFs,cstars, OF, 'linear', 5000);
+    cstar(step) = cstar(step) * 0.8;           % 90% combustion efficiency
     %cstar = p_c_old * A_t / mdot_old;
     
     thrust = mdot_old * c_tau * cstar;    %thrust, lbf
@@ -190,4 +190,4 @@ while m_o_old >= 0  && p_c_old <= p_t_old   %run until ox is depleted
     step = step + 1;
 end
 %Thrust_vec(Thrust_vec > 1030) = 973;
-save('Thrust_data','time_vec','Thrust_vec')
+%save('Thrust_data','time_vec','Thrust_vec')

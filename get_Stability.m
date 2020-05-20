@@ -34,10 +34,10 @@ B = beta / ((1 + sqrt(26)/3)*body.D^2);
 % C = min(p_roots);
 
 %% Fill fin parameters
-fins.RC = 7.5/12;%C;
-fins.TC = 3.75/12;%0.5*C;
-fins.SS = 4.125/12;%C;
-fins.SL = 7.25/12;%0.5*C;
+fins.RC = 7/12;%C;
+fins.TC = 3.5/12;%0.5*C;
+fins.SS = 3.8/12;%C;
+fins.SL = 6.75/12;%0.5*C;
 fins.MC = sqrt(fins.SS^2 + (fins.SL+fins.TC/2 - fins.RC/2)^2);
 fins.t = 0.06*fins.RC+fins.TC/2;
 fins.x = L - fins.RC; % fins located at end of rocket
