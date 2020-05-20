@@ -262,4 +262,4 @@ end
 mo_vec(step:end) = m_o_old;
 mf_vec(step:end) = m_f_old;
 
-save('Thrust_data','time_vec','Thrust_vec', 'Pe_vec')
+save('Thrust_data','time_vec','Thrust_vec', 'Pe_vec','mo_vec','mf_vec')
