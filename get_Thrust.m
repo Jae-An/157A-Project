@@ -1,7 +1,5 @@
-function [T_arr] = get_Thrust(time_vec, Thrust_vec, dt)
+function [T_arr,t_b] = get_Thrust(time_vec, Thrust_vec, dt)
 % Generates thrust array with uniform timesteps of dt using interpolation.
-% T_data should be an xlsx file in the form 'FILENAME.xlsx'
-% T_data should also start from t=0 and end at t=tb
 % dt should be a power of 10
 
 % Import data from file

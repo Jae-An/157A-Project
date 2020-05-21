@@ -31,7 +31,7 @@ g = 32.2;                   % grav accel, ft/s2
 
 % tank and ox properties
 rho_o_init = 1.4984;                 % ox density [sl/ft3]
-m_o = 1.01235;                   % ox mass for OF = 6, tb = 7.6 s
+m_o = 1.0015;                   % ox mass for OF = 6, tb = 7.6 s
 mdot_o = 0.1318;                % ox flow rate [sl/s] hardcoded for now
 V_o = m_o / rho_o_init;              % ox volume [ft3]
 V_tank = V_o * 1.01;            % ox tank volume [+1% for ullage]
@@ -262,4 +262,4 @@ end
 mo_vec(step:end) = m_o_old;
 mf_vec(step:end) = m_f_old;
 
-save('Thrust_data','time_vec','Thrust_vec', 'Pe_vec','mo_vec','mf_vec')
+save('Thrust_data','time_vec','Thrust_vec','Pe_vec','mo_vec','mf_vec')
