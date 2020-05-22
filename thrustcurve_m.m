@@ -31,7 +31,7 @@ g = 32.2;                   % grav accel, ft/s2
 
 % tank and ox properties
 rho_o_init = 1.4984;                 % ox density [sl/ft3]
-m_o = 1.0015;                   % ox mass for OF = 6, tb = 7.6 s
+m_o = 1.011535048802129;                   % ox mass for OF = 6, tb = 7.6 s
 mdot_o = 0.1318;                % ox flow rate [sl/s] hardcoded for now
 V_o = m_o / rho_o_init;              % ox volume [ft3]
 V_tank = V_o * 1.01;            % ox tank volume [+1% for ullage]
@@ -60,7 +60,7 @@ rho_f = percent_htpb*rho_htpb + percent_paraffin*rho_paraffin; %[sl/ft3]
 mdot_tot = .1536;               % tot mass flow rate [sl/s]
 
 mdot_f = 0.022;                % fuel mdot [sl/s]
-m_f = 0.2167;             % fuel mass [sl] accounts for extra fuel
+m_f = 0.218828748890861;             % fuel mass [sl] accounts for extra fuel
 V_f = m_f / rho_f;              %fuel volume [ft3]
 
 d_o = 6;
@@ -77,12 +77,10 @@ D_e = 2.46 /12;             % exit diam [ft]
 D_t = 0.88 / 12;            % throat diameter [ft]
 A_e = pi / 4 * D_e^2;       % exit area [ft2]
 A_t = pi / 4 * D_t^2;       % throat area [ft2]
-%A_e = 0.0279;
-%A_t = 0.0052;
-A_e = 0.047071732763238;
-A_t = 0.008694094039220;       % nozzle for 575 psi pc
+A_e = 0.075557076441258;
+A_t = 0.008781034979612;       % nozzle for 575 psi pc
 eps = A_e / A_t;
-gam = 1.25;                 %specific heat ratio (assume const.)
+gam = 1.25111;                 %specific heat ratio (assume const.)
 
 M_e = nozzleMach(eps,gam,"sup");
 pi_e = (1 + .5*(gam - 1)* M_e^2)^(-gam/(gam - 1)); %exit press ratio
@@ -151,7 +149,7 @@ s_tot = s_old * m_o_old;
 % initialize quality 
 quality = interp2(s_vec, rho_vec, q_SR, s_old, rho_o_old, 'linear');
 
-while m_o_old >= 0  && p_t_old - p_c_old >= 0.2*p_c_old && quality <1 %run until ox is depleted
+while m_o_old >= 0  && p_t_old - p_c_old >= 0.15*p_c_old && quality <1 %run until ox is depleted
     t = time_vec(step);
     
     %calc coeff of thrust

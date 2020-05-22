@@ -24,10 +24,10 @@ geo = rocket.geo;
         
     % Fins
     geo.fins.N = 4;                                     % [fins] fin count
-    geo.fins.RC = 7.5/12;                               % [ft] fin root chord
-    geo.fins.TC = 3.75/12;                              % [ft] fin tip chord
-    geo.fins.SS = 4.125/12;                             % [ft] fin semispan
-    geo.fins.SL = 7.25/12;                              % [ft] fin sweep length
+    geo.fins.RC = 7/12;                               % [ft] fin root chord
+    geo.fins.TC = 3.5/12;                              % [ft] fin tip chord
+    geo.fins.SS = 3.8/12;                             % [ft] fin semispan
+    geo.fins.SL = 6.75/12;                              % [ft] fin sweep length
     geo.fins.MC = sqrt(geo.fins.SS^2 + ...
         (geo.fins.SL+geo.fins.TC/2 - geo.fins.RC/2)^2); % [ft] fin mid chord line
     geo.fins.t = 0.06*(geo.fins.RC+geo.fins.TC)/2;      % [ft] fin average airfoil thickness
@@ -53,7 +53,7 @@ geo = rocket.geo;
 
     rocket.prop = prop;
     rocket.geo.ox_t.D = geo.body.D - 2*rocket.geo.body.t;   % Tank diameter is body inner diameter
-    rocket = get_Motor_new(rocket);    % Sizes rest of propulsion system (tanks, CC, fuel, etc.)
+    rocket = get_Motor(rocket);    % Sizes rest of propulsion system (tanks, CC, fuel, etc.)
     
     % Miscellaneous + Finishing prop geo
     % Order: nose bulkhead, drogue, payload bulkhead, avionics, main, bulkhead,
